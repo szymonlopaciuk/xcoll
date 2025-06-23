@@ -6,13 +6,10 @@
 import numpy as np
 import pytest
 
-import xobjects as xo
 import xpart as xp
 import xtrack as xt
 import xcoll as xc
-import time
 
-import matplotlib.pyplot as plt
 
 # TODO: particle angles
 
@@ -116,20 +113,3 @@ def _assert_valid_positions(part, hit_ids, not_hit_ids, momentum_accuracy=1.e-12
     faulty =  mask_hit & (abs(part.px) < momentum_accuracy) & (abs(part.py) < momentum_accuracy)
     faulty &= (part.state > 0)
     assert len(part.x[faulty]) <= 1  # We allow for a small margin of error
-
-
-def _plot_jaws(coll, part_init, part, hit_ids, not_hit_ids):
-    mask = np.isin(part.parent_particle_id, not_hit_ids) & (part.state < 1)
-    wrong_ids = part.parent_particle_id[mask]
-    mask_wrong_init = np.isin(part_init.particle_id, wrong_ids)
-
-    mask_hit_init = np.isin(part_init.particle_id, hit_ids)
-    mask_not_hit_init = np.isin(part_init.particle_id, not_hit_ids)
-    plt.scatter(part_init.x[mask_not_hit_init], part_init.y[mask_not_hit_init], c='b', s=2)
-    plt.scatter(part_init.x[mask_hit_init], part_init.y[mask_hit_init], c='g', s=2)
-    plt.scatter(part_init.x[mask_wrong_init], part_init.y[mask_wrong_init], c='r', s=2)
-    plt.axvline(coll.jaw_LU, c='k', linestyle='--')
-    plt.axvline(coll.jaw_LD, c='k', linestyle='--')
-    plt.axvline(coll.jaw_RU, c='k', linestyle='--')
-    plt.axvline(coll.jaw_RD, c='k', linestyle='--')
-    plt.show()
